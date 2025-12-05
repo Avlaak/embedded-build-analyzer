@@ -149,17 +149,119 @@ export class WebviewRenderer {
                 #refreshButton,
                 #refreshPathsButton {
                     padding: 5px 10px;
-                    margin-bottom: 10px;
                     cursor: pointer;
                     background-color: var(--vscode-button-secondaryBackground);
                     color: var(--vscode-button-secondaryForeground);
                     border: 1px solid var(--vscode-button-secondaryBorder);
                     border-radius: 2px;
+                    height: 26px;
+                    box-sizing: border-box;
                 }
 
                 #refreshButton:hover,
                 #refreshPathsButton:hover {
                     background-color: var(--vscode-button-secondaryHoverBackground);
+                }
+
+                .button-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 10px;
+                    flex-wrap: nowrap;
+                }
+
+                .search-widget {
+                    display: flex;
+                    align-items: center;
+                    background-color: var(--vscode-input-background);
+                    border: 1px solid var(--vscode-input-border);
+                    border-radius: 2px;
+                    height: 26px;
+                    box-sizing: border-box;
+                    padding: 0 2px;
+                }
+
+                .search-widget:focus-within {
+                    outline: 1px solid var(--vscode-focusBorder);
+                    border-color: var(--vscode-focusBorder);
+                }
+
+                #searchInput {
+                    flex: 1;
+                    padding: 3px 6px;
+                    background-color: transparent;
+                    color: var(--vscode-input-foreground);
+                    border: none;
+                    font-family: var(--vscode-editor-font-family);
+                    font-size: 13px;
+                    height: 22px;
+                    box-sizing: border-box;
+                    min-width: 100px;
+                    outline: none;
+                }
+
+                #searchInput::placeholder {
+                    color: var(--vscode-input-placeholderForeground);
+                }
+
+                .search-options {
+                    display: flex;
+                    align-items: center;
+                    gap: 1px;
+                    padding-right: 2px;
+                }
+
+                .search-option {
+                    width: 22px;
+                    height: 22px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    border-radius: 3px;
+                    background-color: transparent;
+                    border: none;
+                    color: var(--vscode-input-foreground);
+                    font-size: 12px;
+                    font-weight: bold;
+                    opacity: 0.7;
+                }
+
+                .search-option:hover {
+                    background-color: var(--vscode-toolbar-hoverBackground);
+                    opacity: 1;
+                }
+
+                .search-option.active {
+                    background-color: var(--vscode-inputOption-activeBackground);
+                    color: var(--vscode-inputOption-activeForeground);
+                    border: 1px solid var(--vscode-inputOption-activeBorder);
+                    opacity: 1;
+                }
+
+                .search-option[title="Match Case"] {
+                    font-size: 13px;
+                    text-decoration: underline;
+                }
+
+                .search-option[title="Match Whole Word"] {
+                    font-size: 11px;
+                    text-decoration: underline;
+                }
+
+                .search-option[title="Use Regular Expression"] {
+                    font-size: 11px;
+                }
+
+                .search-highlight {
+                    background-color: var(--vscode-editor-findMatchHighlightBackground);
+                }
+
+                .search-match-count {
+                    font-size: 12px;
+                    color: var(--vscode-descriptionForeground);
+                    white-space: nowrap;
                 }
 
             </style>
@@ -168,6 +270,15 @@ export class WebviewRenderer {
             <div class="button-container">
                 <button id="refreshButton" class="button">Refresh Analyze</button>
                 <button id="refreshPathsButton" class="button">Change Build Folder</button>
+                <div class="search-widget">
+                    <input type="text" id="searchInput" placeholder="Search symbols..." />
+                    <div class="search-options">
+                        <button class="search-option" id="caseSensitive" title="Match Case">Aa</button>
+                        <button class="search-option" id="wholeWord" title="Match Whole Word">ab</button>
+                        <button class="search-option" id="useRegex" title="Use Regular Expression">.*</button>
+                    </div>
+                </div>
+                <span id="searchMatchCount" class="search-match-count"></span>
             </div>
             <div class="current-build-folder-path-container">
                 <label><strong>Current Build Folder:</strong></label>
@@ -394,7 +505,159 @@ export class WebviewRenderer {
                     document.getElementById('refreshPathsButton').addEventListener('click', () => {
                         vscode.postMessage({ command: 'refreshPaths' });
                     });
+
+                    // Search functionality
+                    const searchInput = document.getElementById('searchInput');
+                    const caseSensitiveBtn = document.getElementById('caseSensitive');
+                    const wholeWordBtn = document.getElementById('wholeWord');
+                    const useRegexBtn = document.getElementById('useRegex');
+
+                    let searchTimeout;
+
+                    searchInput.addEventListener('input', () => {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(() => {
+                            performSearch(searchInput.value.trim());
+                        }, 200);
+                    });
+
+                    searchInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            searchInput.value = '';
+                            performSearch('');
+                        }
+                    });
+
+                    // Toggle search options
+                    [caseSensitiveBtn, wholeWordBtn, useRegexBtn].forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            btn.classList.toggle('active');
+                            performSearch(searchInput.value.trim());
+                        });
+                    });
                 });
+
+                function performSearch(query) {
+                    const searchMatchCount = document.getElementById('searchMatchCount');
+                    const allRows = document.querySelectorAll('.toggleTr');
+                    const caseSensitive = document.getElementById('caseSensitive').classList.contains('active');
+                    const wholeWord = document.getElementById('wholeWord').classList.contains('active');
+                    const useRegex = document.getElementById('useRegex').classList.contains('active');
+                    
+                    // Remove previous highlights
+                    document.querySelectorAll('.search-highlight').forEach(el => {
+                        el.classList.remove('search-highlight');
+                    });
+
+                    let matchCount = 0;
+
+                    if (!query) {
+                        // Reset to default view - hide all child rows
+                        allRows.forEach(row => {
+                            const level = parseInt(row.getAttribute('data-level'), 10);
+                            if (level === 1) {
+                                row.style.display = '';
+                                const toggle = row.querySelector('.toggle');
+                                if (toggle) toggle.textContent = '+';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                        searchMatchCount.textContent = '';
+                        return;
+                    }
+
+                    // Build matcher function based on options
+                    let matcher;
+                    try {
+                        if (useRegex) {
+                            const flags = caseSensitive ? '' : 'i';
+                            const pattern = wholeWord ? String.fromCharCode(92) + 'b' + query + String.fromCharCode(92) + 'b' : query;
+                            const regex = new RegExp(pattern, flags);
+                            matcher = (text) => regex.test(text);
+                        } else {
+                            const searchQuery = caseSensitive ? query : query.toLowerCase();
+                            if (wholeWord) {
+                                // Simple word boundary check without regex for non-regex mode
+                                matcher = (text) => {
+                                    const searchIn = caseSensitive ? text : text.toLowerCase();
+                                    const idx = searchIn.indexOf(searchQuery);
+                                    if (idx === -1) return false;
+                                    const before = idx === 0 || !/[a-zA-Z0-9_]/.test(searchIn[idx - 1]);
+                                    const after = idx + searchQuery.length >= searchIn.length || !/[a-zA-Z0-9_]/.test(searchIn[idx + searchQuery.length]);
+                                    return before && after;
+                                };
+                            } else {
+                                matcher = (text) => {
+                                    const searchIn = caseSensitive ? text : text.toLowerCase();
+                                    return searchIn.includes(searchQuery);
+                                };
+                            }
+                        }
+                    } catch (e) {
+                        // Invalid regex
+                        searchMatchCount.textContent = 'Invalid regex';
+                        return;
+                    }
+
+                    const parentsToShow = new Set();
+
+                    // First pass: find matching symbols (level 3)
+                    allRows.forEach(row => {
+                        const level = parseInt(row.getAttribute('data-level'), 10);
+                        if (level === 3) {
+                            const nameCell = row.querySelector('td:nth-child(2)');
+                            const symbolName = nameCell ? nameCell.textContent.trim() : '';
+                            
+                            if (matcher(symbolName)) {
+                                matchCount++;
+                                row.style.display = '';
+                                nameCell.classList.add('search-highlight');
+                                
+                                // Mark parent section and region to show
+                                const sectionId = row.getAttribute('data-parent');
+                                parentsToShow.add(sectionId);
+                                
+                                const sectionRow = document.querySelector(\`tr[data-id="\${sectionId}"]\`);
+                                if (sectionRow) {
+                                    const regionId = sectionRow.getAttribute('data-parent');
+                                    parentsToShow.add(regionId);
+                                }
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        }
+                    });
+
+                    // Second pass: show/hide sections and regions based on matches
+                    allRows.forEach(row => {
+                        const level = parseInt(row.getAttribute('data-level'), 10);
+                        const id = row.getAttribute('data-id');
+                        const toggle = row.querySelector('.toggle');
+
+                        if (level === 1) {
+                            if (parentsToShow.has(id)) {
+                                row.style.display = '';
+                                if (toggle) toggle.textContent = '−';
+                            } else {
+                                row.style.display = 'none';
+                                if (toggle) toggle.textContent = '+';
+                            }
+                        } else if (level === 2) {
+                            if (parentsToShow.has(id)) {
+                                row.style.display = '';
+                                if (toggle) toggle.textContent = '−';
+                            } else {
+                                row.style.display = 'none';
+                                if (toggle) toggle.textContent = '+';
+                            }
+                        }
+                    });
+
+                    searchMatchCount.textContent = matchCount > 0 
+                        ? 'Found: ' + matchCount + ' symbols'
+                        : 'No matches';
+                }
 
                 document.getElementById('regionsTable').addEventListener('click', (e) => {
                     const toggleSpan = e.target.closest('.toggle');
@@ -442,6 +705,11 @@ export class WebviewRenderer {
                             if (message.currentBuildFolderRelativePath) {
                                 const folderDiv = document.getElementById('buildFolderPath');
                                 folderDiv.textContent = message.currentBuildFolderRelativePath;
+                            }
+                            // Reset search when data is refreshed
+                            const searchInput = document.getElementById('searchInput');
+                            if (searchInput && searchInput.value) {
+                                performSearch(searchInput.value.trim());
                             }
                             break;
                     }
