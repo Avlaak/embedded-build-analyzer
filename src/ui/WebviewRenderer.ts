@@ -270,53 +270,26 @@ export class WebviewRenderer {
                     white-space: nowrap;
                 }
 
-                .sort-widget {
-                    display: flex;
-                    align-items: center;
-                    gap: 4px;
-                    margin-left: 8px;
-                }
-
-                .sort-label {
-                    font-family: var(--vscode-font-family);
-                    font-size: 13px;
-                    color: var(--vscode-descriptionForeground);
-                }
-
-                .sort-select {
-                    padding: 3px 6px;
-                    background-color: var(--vscode-dropdown-background);
-                    color: var(--vscode-dropdown-foreground);
-                    border: 1px solid var(--vscode-dropdown-border);
-                    border-radius: 2px;
-                    font-family: var(--vscode-font-family);
-                    font-size: 13px;
-                    height: 24px;
+                .sortable-header {
                     cursor: pointer;
+                    user-select: none;
+                    white-space: nowrap;
                 }
 
-                .sort-select:focus {
-                    outline: 1px solid var(--vscode-focusBorder);
-                    border-color: var(--vscode-focusBorder);
+                .sortable-header:hover {
+                    background-color: var(--vscode-list-hoverBackground);
                 }
 
-                .sort-direction {
-                    width: 24px;
-                    height: 24px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                    border-radius: 3px;
-                    background-color: var(--vscode-button-secondaryBackground);
-                    border: 1px solid var(--vscode-button-secondaryBorder);
-                    color: var(--vscode-button-secondaryForeground);
-                    font-family: var(--vscode-font-family);
+                .sort-indicator {
+                    display: inline-block;
+                    margin-left: 4px;
+                    opacity: 0.3;
                     font-size: 13px;
                 }
 
-                .sort-direction:hover {
-                    background-color: var(--vscode-button-secondaryHoverBackground);
+                .sort-indicator.active {
+                    opacity: 1;
+                    color: var(--vscode-textLink-foreground);
                 }
 
             </style>
@@ -334,15 +307,6 @@ export class WebviewRenderer {
                     </div>
                 </div>
                 <span id="searchMatchCount" class="search-match-count"></span>
-                <div class="sort-widget">
-                    <span class="sort-label">Sort:</span>
-                    <select id="sortField" class="sort-select">
-                        <option value="none">None</option>
-                        <option value="name">Name</option>
-                        <option value="size">Size</option>
-                    </select>
-                    <button id="sortDirection" class="sort-direction" title="Toggle sort direction">↑</button>
-                </div>
             </div>
             <div class="current-build-folder-path-container">
                 <label><strong>Current Build Folder:</strong></label>
@@ -353,9 +317,9 @@ export class WebviewRenderer {
                 <thead id="regionsHead">
                     <tr>
                         <td></td>
-                        <td>Name</td>
-                        <td>Address</td>
-                        <td>Size</td>
+                        <td class="sortable-header" data-sort="name">Name <span class="sort-indicator" id="sort-name">↕</span></td>
+                        <td class="sortable-header" data-sort="address">Address <span class="sort-indicator" id="sort-address">↕</span></td>
+                        <td class="sortable-header" data-sort="size">Size <span class="sort-indicator" id="sort-size">↕</span></td>
                         <td>Used</td>
                         <td>Free</td>
                     </tr>
@@ -501,13 +465,16 @@ export class WebviewRenderer {
                             sectionTr.appendChild(sectionTd6);
                             tableBody.appendChild(sectionTr);
 
+                            let symbolIndex = 0;
                             section.symbols.forEach(symbol => {
                                 id++;
+                                symbolIndex++;
                                 const pointTr = document.createElement('tr');
                                 pointTr.className = 'toggleTr level-3';
                                 pointTr.setAttribute('data-level', '3');
                                 pointTr.setAttribute('data-id', id);
                                 pointTr.setAttribute('data-parent', sectionId);
+                                pointTr.setAttribute('data-original-index', symbolIndex);
                                 pointTr.style.display = 'none';
                                 
                                 const pointTd1 = document.createElement('td');
@@ -600,29 +567,52 @@ export class WebviewRenderer {
                         });
                     });
 
-                    // Sort functionality
-                    const sortField = document.getElementById('sortField');
-                    const sortDirection = document.getElementById('sortDirection');
+                    // Sort functionality - clickable headers
+                    let currentSortField = null;
                     let isAscending = true;
 
-                    sortField.addEventListener('change', () => {
-                        applySorting();
+                    document.querySelectorAll('.sortable-header').forEach(header => {
+                        header.addEventListener('click', () => {
+                            const field = header.getAttribute('data-sort');
+                            
+                            if (currentSortField === field) {
+                                // Toggle direction or reset
+                                if (isAscending) {
+                                    isAscending = false;
+                                } else {
+                                    // Reset sorting - sort by original index
+                                    currentSortField = null;
+                                    isAscending = true;
+                                    updateSortIndicators();
+                                    applySorting('original');
+                                    return;
+                                }
+                            } else {
+                                currentSortField = field;
+                                isAscending = true;
+                            }
+                            
+                            updateSortIndicators();
+                            applySorting(field);
+                        });
                     });
 
-                    sortDirection.addEventListener('click', () => {
-                        isAscending = !isAscending;
-                        sortDirection.textContent = isAscending ? '↑' : '↓';
-                        sortDirection.title = isAscending ? 'Ascending' : 'Descending';
-                        applySorting();
-                    });
-
-                    function applySorting() {
-                        const field = sortField.value;
-                        if (field === 'none') {
-                            // Request refresh to restore original order
-                            vscode.postMessage({ command: 'requestRefresh' });
-                            return;
+                    function updateSortIndicators() {
+                        document.querySelectorAll('.sort-indicator').forEach(indicator => {
+                            indicator.textContent = '↕';
+                            indicator.classList.remove('active');
+                        });
+                        
+                        if (currentSortField) {
+                            const indicator = document.getElementById('sort-' + currentSortField);
+                            if (indicator) {
+                                indicator.textContent = isAscending ? '↑' : '↓';
+                                indicator.classList.add('active');
+                            }
                         }
+                    }
+
+                    function applySorting(field) {
 
                         const tableBody = document.getElementById('regionsBody');
                         const allRows = Array.from(tableBody.querySelectorAll('.toggleTr'));
@@ -651,10 +641,22 @@ export class WebviewRenderer {
                             region.sections.forEach(section => {
                                 section.symbols.sort((a, b) => {
                                     let valA, valB;
-                                    if (field === 'name') {
+                                    if (field === 'original') {
+                                        // Sort by original index to restore default order
+                                        valA = parseInt(a.getAttribute('data-original-index'), 10) || 0;
+                                        valB = parseInt(b.getAttribute('data-original-index'), 10) || 0;
+                                        return valA - valB;
+                                    } else if (field === 'name') {
                                         valA = a.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
                                         valB = b.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
                                         return isAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                                    } else if (field === 'address') {
+                                        // Parse hex address from the 3rd column
+                                        const addrTextA = a.querySelector('td:nth-child(3)').textContent.trim();
+                                        const addrTextB = b.querySelector('td:nth-child(3)').textContent.trim();
+                                        valA = parseInt(addrTextA, 16) || 0;
+                                        valB = parseInt(addrTextB, 16) || 0;
+                                        return isAscending ? valA - valB : valB - valA;
                                     } else if (field === 'size') {
                                         // Extract size in bytes from the 4th column
                                         const sizeTextA = a.querySelector('td:nth-child(4)').textContent.trim();
