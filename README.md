@@ -50,27 +50,36 @@ This fork removes that dependency, adds broader file handling, and enhances the 
 1. Node.js installed  
 2. npm installed  
 3. `vsce` installed:
+
    ```bash
    npm install -g @vscode/vsce
    ```
 
 #### Build and Install manual
+
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/niwciu/stm32-build-analyzer.git
    cd stm32-build-analyzer
    ```
+
 2. Install dependencies:
+
    ```bash
    npm install
    ```
+
 3. Build the .vsix package using vsce:
+
    ```bash
    vsce package
    ```
+
 4. This will generate a file like: `stm32-build-analyzer-enhanced-1.1.2.vsix`
 
-5. Install the extension in VS Code: 
+5. Install the extension in VS Code:
+
    ```bash
    code --install-extension stm32-build-analyzer-enhanced-1.1.2.vsix
    ```
