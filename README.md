@@ -11,7 +11,7 @@
 ## ❓ Why This Fork?
 
 The original version was depandet with cmake-tool extension.  
-This fork removes that dependency, adds broader file handling, and enhances the UI for developers using CubeIDE, Makefiles, or custom setups.
+This fork removes that dependency, adds broader file handling, and enhances the UI for developers using VSCode, CMake, Makefiles, or any other custom setups.
 
 ---
 
