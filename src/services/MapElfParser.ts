@@ -95,7 +95,7 @@ export class MapElfParser {
 
   private parseSymbols(elfFile: string, regions: Region[]): void {
     const cmd = this.getTool('arm-none-eabi-nm');
-    const out = cp.spawnSync(cmd, ['-C', '-S', '-n', '-l', '--defined-only', elfFile]);
+    const out = cp.spawnSync(cmd, ['-C', '-S', '-n', '-l', '--defined-only', elfFile], {maxBuffer: 32 * 1024 * 1024});
 
     if (out.error) {
       if (this.debug) {console.error(`[STM32 Parser] nm error: ${out.error.message}`);}
