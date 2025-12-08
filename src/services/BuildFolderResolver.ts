@@ -120,7 +120,15 @@ export class BuildFolderResolver {
     const common = ['build', 'Build', 'Release', 'Debug', 'out', 'output']
       .map(p => path.join(root, p));
 
+    const visited = new Set<string>();
+    // Heuristic: assume Windows and macOS are case-insensitive by default
+    const isCaseInsensitive = process.platform === 'win32' || process.platform === 'darwin';
+
     const walk = (dir: string) => {
+      const key = isCaseInsensitive ? dir.toLowerCase() : dir;
+      if (visited.has(key)) { return; }
+      visited.add(key);
+
       try {
         let hasMap = false, hasElf = false;
         for (const d of fs.readdirSync(dir, { withFileTypes: true })) {
