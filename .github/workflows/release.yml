@@ -63,7 +63,7 @@ jobs:
           bodyFile: "Release_Notes.md"
           allowUpdates: false
           prerelease: ${{ env.IS_PRERELEASE }}
-          tag: ${{ env.VERSION }}
+          tag: "v${{ env.VERSION }}"
           commit: ${{ github.ref_name }}
 
 
