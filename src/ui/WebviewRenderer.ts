@@ -20,7 +20,7 @@ export class WebviewRenderer {
     private readonly view: vscode.WebviewView
   ) {
     this.debug = vscode.workspace
-      .getConfiguration('stm32BuildAnalyzerEnhanced')
+      .getConfiguration('EmbeddedBuildAnalyzer')
       .get<boolean>('debug') ?? false;
   }
 
@@ -33,20 +33,20 @@ export class WebviewRenderer {
     this.view.webview.html = this.getHtml();
 
     if (this.debug) {
-      console.log('[STM32 Webview] Initialized webview with HTML and options.');
+      console.log('[Webview] Initialized webview with HTML and options.');
     }
 
     this.view.webview.onDidReceiveMessage(msg => {
       if (this.debug) {
-        console.log(`[STM32 Webview] Received message:`, msg);
+        console.log(`[Webview] Received message:`, msg);
       }
 
       switch (msg.command) {
         case 'requestRefresh':
-          vscode.commands.executeCommand('stm32BuildAnalyzerEnhanced.refresh');
+          vscode.commands.executeCommand('EmbeddedBuildAnalyzer.refresh');
           break;
         case 'refreshPaths':
-          vscode.commands.executeCommand('stm32BuildAnalyzerEnhanced.refreshPaths');
+          vscode.commands.executeCommand('EmbeddedBuildAnalyzer.refreshPaths');
           break;
         case 'openFile':
           this.openFile(msg.filePath, msg.lineNumber);
@@ -57,7 +57,7 @@ export class WebviewRenderer {
 
   public showData(regions: Region[], buildFolder: string) {
     if (this.debug) {
-      console.log(`[STM32 Webview] Sending ${regions.length} region(s) to webview.`);
+      console.log(`[Webview] Sending ${regions.length} region(s) to webview.`);
     }
 
     this.view.webview.postMessage({
@@ -70,7 +70,7 @@ export class WebviewRenderer {
   private async openFile(file: string, line: number) {
     try {
       if (this.debug) {
-        console.log(`[STM32 Webview] Attempting to open file: ${file} @ ${line}`);
+        console.log(`[Webview] Attempting to open file: ${file} @ ${line}`);
       }
 
       const uri = vscode.Uri.file(file);
@@ -82,7 +82,7 @@ export class WebviewRenderer {
     } catch (err) {
       vscode.window.showErrorMessage(`Cannot open ${file}`);
       if (this.debug) {
-        console.error(`[STM32 Webview] Failed to open file: ${file}`, err);
+        console.error(`[Webview] Failed to open file: ${file}`, err);
       }
     }
   }

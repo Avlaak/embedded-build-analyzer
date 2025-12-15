@@ -1,17 +1,16 @@
-# STM32 Build Analyzer (Enhanced) 🚀  
+# Embedded Build Analyzer 🚀  
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blue?logo=visualstudiocode)](#)
 
-> Visual memory analyzer for STM32 projects – works with `.map` and `.elf` files, no matter what toolchain or build system you use.
+> Visual memory analyzer for embedded projects – works with `.map` and `.elf` files, no matter what toolchain or build system you use.
 
-![Main UI View](images/2.JPG)
+![Main UI View](images/1.png)
 
 ---
 
-## ❓ Why This Fork?
+## ❓ About This Extension
 
-The original version was dependent on the CMake Tools extension.  
-This fork removes that dependency, adds broader file handling, and enhances the UI for developers using VS Code, CMake, Makefiles, or any other custom setups.
+This extension is part of the **[Embedded Project Manager](https://github.com/embeddteam/EmbeddedProjectManager.git)** – a comprehensive toolkit for embedded systems development in VS Code.
 
 ---
 
@@ -31,7 +30,7 @@ This fork removes that dependency, adds broader file handling, and enhances the 
 - Clickable links from symbols to source files
 - Visual panel with color-coded usage (RAM, Flash)
 - ARM toolchain integration (`arm-none-eabi-objdump`, `nm`)
-- Compatible with any STM32 build system
+- Compatible with any toolchain producing `.elf` files (ARM GCC, Keil, IAR, etc.)
 - Search functionality for symbols (case-sensitive, whole word, regex options)
 - Sorting by name, address, and size (ascending/descending)
 
@@ -41,7 +40,7 @@ This fork removes that dependency, adds broader file handling, and enhances the 
 
 ### From VS Code Marketplace (Coming soon)
 
-📥 [Marketplace link placeholder](https://marketplace.visualstudio.com/items?itemName=niwciu.stm32-build-analyzer-enhanced#)
+📥 [Marketplace link placeholder](https://marketplace.visualstudio.com/items?itemName=embeddteam.embedded-build-analyzer#)
 
 ### Manual Installation
 
@@ -60,8 +59,8 @@ This fork removes that dependency, adds broader file handling, and enhances the 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/niwciu/stm32-build-analyzer.git
-   cd stm32-build-analyzer
+   git clone https://github.com/avlaak/embedded-build-analyzer.git
+   cd embedded-build-analyzer
    ```
 
 2. Install dependencies:
@@ -76,12 +75,12 @@ This fork removes that dependency, adds broader file handling, and enhances the 
    vsce package
    ```
 
-4. This will generate a file like: `stm32-build-analyzer-enhanced-1.1.2.vsix`
+4. This will generate a file like: `embedded-build-analyzer-1.1.3.vsix`
 
 5. Install the extension in VS Code:
 
    ```bash
-   code --install-extension stm32-build-analyzer-enhanced-1.1.2.vsix
+   code --install-extension embedded-build-analyzer-1.1.3.vsix
    ```
 
 
@@ -90,8 +89,8 @@ This fork removes that dependency, adds broader file handling, and enhances the 
 ## 🛠 Usage
 
 - Open the Command Palette (`Ctrl+Shift+P`) and run:
-  - `STM32 Build Analyzer` – opens the main view
-  - `STM32 Build Analyzer Refresh Paths` – re-detects build output folder
+  - `Embedded Build Analyzer` – opens the main view
+  - `Embedded Build Analyzer Refresh Paths` – re-detects build output folder
 - Analyzer view updates automatically when build output files change.
 
 ---
@@ -112,7 +111,7 @@ Contributions are welcome! Please fork the repo and submit a pull request:
 4. Push to branch (`git push origin feature-name`)
 5. Open a Pull Request
 
-If you find bugs or want to request features, feel free to [open an issue](https://github.com/niwciu/stm32-build-analyzer/issues).
+If you find bugs or want to request features, feel free to [open an issue](https://github.com/avlaak/embedded-build-analyzer/issues).
 
 
 ---
@@ -121,14 +120,14 @@ If you find bugs or want to request features, feel free to [open an issue](https
 
 This extension is licensed under the [MIT License](LICENSE).  
 Originally created by Aleksei Perevozchikov ([ATwice291](https://github.com/ATwice291))  
-Fork maintained by [niwciu](https://github.com/niwciu) with enhancements described above.
+Fork maintained by [avlaak](https://github.com/avlaak) with enhancements described above.
 
 ---
 
 <!-- SEO note -->
-STM32 build analyzer for memory usage, symbol tracking, and map/elf inspection – compatible with Makefiles, CubeIDE, and other toolchains.
+Embedded Build Analyzer for memory usage, symbol tracking, and map/elf inspection – compatible with Makefiles, CubeIDE, and other toolchains.
 
-## ❤️ Thank you for using this version of STM32 Build Analyzer!
+## ❤️ Thank you for using this version of Embedded Build Analyzer!
 
 </br></br>
 <div align="center">

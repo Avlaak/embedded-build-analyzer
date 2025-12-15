@@ -1,7 +1,8 @@
 MIT License
 
 Copyright (c) 2025 Aleksei Perevozchikov aka ATwice291
-Copyright (c) 2024 niwciu (fork with CMake tool dependencie removal, multi build folder support, UI aditional functionality, and few other improvements ) 
+Copyright (c) 2024 niwciu (fork of ATwice291)
+Copyright (c) 2025 avlaak (fork of niwciu)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -13,23 +13,23 @@ export class BuildFolderResolver {
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this.debug = vscode.workspace
-      .getConfiguration('stm32BuildAnalyzerEnhanced')
+      .getConfiguration('EmbeddedBuildAnalyzer')
       .get<boolean>('debug') ?? false;
   }
 
   public async resolve(): Promise<BuildPaths> {
-    const cfg = vscode.workspace.getConfiguration('stm32BuildAnalyzer');
+    const cfg = vscode.workspace.getConfiguration('EmbeddedBuildAnalyzer');
     const customMap = cfg.get<string>('mapFilePath');
     const customElf = cfg.get<string>('elfFilePath');
 
     if (this.debug) {
-      console.log('[STM32] Resolving build paths...');
-      console.log(`[STM32] Custom map: ${customMap}`);
-      console.log(`[STM32] Custom elf: ${customElf}`);
+      console.log('[Extension] Resolving build paths...');
+      console.log(`[Extension] Custom map: ${customMap}`);
+      console.log(`[Extension] Custom elf: ${customElf}`);
     }
 
     if (customMap && customElf && await this.exists(customMap) && await this.exists(customElf)) {
-      if (this.debug) {console.log('[STM32] Using custom paths from settings.');}
+      if (this.debug) {console.log('[Extension] Using custom paths from settings.');}
       return {
         map: customMap,
         elf: customElf,
@@ -44,7 +44,7 @@ export class BuildFolderResolver {
 
     const root = workspaceFolders[0].uri.fsPath;
 
-    if (this.debug) {console.log(`[STM32] Scanning workspace folder: ${root}`);}
+    if (this.debug) {console.log(`[Extension] Scanning workspace folder: ${root}`);}
 
     const folders = await this.findBuildFolders(root);
     if (folders.length === 0) {
@@ -92,8 +92,8 @@ export class BuildFolderResolver {
     }
 
     if (this.debug) {
-        console.log(`[STM32] Selected ELF: ${selectedItem.elf}`);
-        console.log(`[STM32] Selected MAP: ${selectedItem.map}`);
+        console.log(`[Extension] Selected ELF: ${selectedItem.elf}`);
+        console.log(`[Extension] Selected MAP: ${selectedItem.map}`);
     }
 
     return {
@@ -104,22 +104,22 @@ export class BuildFolderResolver {
   }
 
   private async getToolchainPath(): Promise<string | undefined> {
-    const cfg = vscode.workspace.getConfiguration('stm32BuildAnalyzerEnhanced');
+    const cfg = vscode.workspace.getConfiguration('EmbeddedBuildAnalyzer');
     const toolchain = cfg.get<string>('toolchainPath');
 
     if (!toolchain) {return undefined;}
 
     if (await this.exists(toolchain)) {
-      if (this.debug) {console.log(`[STM32] Using toolchain: ${toolchain}`);}
+      if (this.debug) {console.log(`[Extension] Using toolchain: ${toolchain}`);}
       vscode.window.showInformationMessage(
-        `STM32 Build Analyzer: Using toolchain from ${toolchain}`
+        `Embedded Build Analyzer: Using toolchain from ${toolchain}`
       );
       return toolchain;
     } else {
       vscode.window.showWarningMessage(
-        `STM32 Build Analyzer: toolchainPath not found: ${toolchain}`
+        `Embedded Build Analyzer: toolchainPath not found: ${toolchain}`
       );
-      if (this.debug) {console.warn(`[STM32] Toolchain path not found: ${toolchain}`);}
+      if (this.debug) {console.warn(`[Extension] Toolchain path not found: ${toolchain}`);}
     }
 
     return undefined;
@@ -130,7 +130,7 @@ export class BuildFolderResolver {
       await fs.promises.access(filePath, fs.constants.R_OK);
       return true;
     } catch {
-      if (this.debug) {console.warn(`[STM32] File not accessible: ${filePath}`);}
+      if (this.debug) {console.warn(`[Extension] File not accessible: ${filePath}`);}
       return false;
     }
   }
@@ -162,11 +162,11 @@ export class BuildFolderResolver {
           }
         }
         if (hasMap && hasElf) {
-          if (this.debug) {console.log(`[STM32] Found build folder: ${dir}`);}
+          if (this.debug) {console.log(`[Extension] Found build folder: ${dir}`);}
           found.add(dir);
         }
       } catch (err) {
-        if (this.debug) {console.warn(`[STM32] Failed to access folder: ${dir}`);}
+        if (this.debug) {console.warn(`[Extension] Failed to access folder: ${dir}`);}
       }
     };
 
@@ -185,7 +185,7 @@ export class BuildFolderResolver {
   private async findFile(folder: string, ext: string): Promise<string | undefined> {
     const files = fs.readdirSync(folder).filter(f => f.endsWith(ext));
     if (files.length === 0) {
-      if (this.debug) {console.warn(`[STM32] No ${ext} files in ${folder}`);}
+      if (this.debug) {console.warn(`[Extension] No ${ext} files in ${folder}`);}
       return undefined;
     }
 
@@ -206,10 +206,10 @@ export class BuildFolderResolver {
         throw new Error('Map file is empty');
       }
 
-      if (this.debug) {console.log(`[STM32] Selected ${ext} file: ${p}`);}
+      if (this.debug) {console.log(`[Extension] Selected ${ext} file: ${p}`);}
       return p;
     } catch (err) {
-      if (this.debug) {console.warn(`[STM32] Could not use file: ${p}`);}
+      if (this.debug) {console.warn(`[Extension] Could not use file: ${p}`);}
       return undefined;
     }
   }

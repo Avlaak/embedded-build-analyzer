@@ -10,14 +10,14 @@ export class MapElfParser {
 
   public parse(mapPath: string, elfPath: string): Region[] {
     if (this.debug) {
-      console.log(`[STM32 Parser] Parsing map: ${mapPath}`);
-      console.log(`[STM32 Parser] Parsing elf: ${elfPath}`);
+      console.log(`[Parser] Parsing map: ${mapPath}`);
+      console.log(`[Parser] Parsing elf: ${elfPath}`);
     }
 
     const regions = this.parseMap(mapPath);
 
     if (this.debug) {
-      console.log(`[STM32 Parser] Regions parsed: ${regions.length}`);
+      console.log(`[Parser] Regions parsed: ${regions.length}`);
       regions.forEach(r =>
         console.log(` → ${r.name}: ${r.size.toString(16)} bytes at 0x${r.startAddress.toString(16)}`)
       );
@@ -60,7 +60,7 @@ export class MapElfParser {
     const out = cp.spawnSync(cmd, ['-h', elfFile]);
 
     if (out.error) {
-      if (this.debug) {console.error(`[STM32 Parser] objdump error: ${out.error.message}`);}
+      if (this.debug) {console.error(`[Parser] objdump error: ${out.error.message}`);}
       return;
     }
 
@@ -86,7 +86,7 @@ export class MapElfParser {
           r.sections.push({ name, startAddress: addr, size, loadAddress: load, symbols: [] });
           r.used += size;
           if (this.debug) {
-            console.log(`[STM32 Parser] Section ${name} assigned to region ${r.name}`);
+            console.log(`[Parser] Section ${name} assigned to region ${r.name}`);
           }
         }
       }
@@ -98,7 +98,7 @@ export class MapElfParser {
     const out = cp.spawnSync(cmd, ['-C', '-S', '-n', '-l', '--defined-only', elfFile], {maxBuffer: 32 * 1024 * 1024});
 
     if (out.error) {
-      if (this.debug) {console.error(`[STM32 Parser] nm error: ${out.error.message}`);}
+      if (this.debug) {console.error(`[Parser] nm error: ${out.error.message}`);}
       return;
     }
 
@@ -131,7 +131,7 @@ export class MapElfParser {
           if (addr >= ss && addr < se) {
             s.symbols.push({ name, startAddress: addr, size, path: file, row });
             if (this.debug) {
-              console.log(`[STM32 Parser] Symbol ${name} in section ${s.name} (${file}:${row})`);
+              console.log(`[Parser] Symbol ${name} in section ${s.name} (${file}:${row})`);
             }
             break;
           }
@@ -143,11 +143,11 @@ export class MapElfParser {
   private getTool(exe: string): string {
     const full = `${this.toolchainPath}/${exe}${process.platform === 'win32' ? '.exe' : ''}`;
     if (this.toolchainPath && fs.existsSync(full)) {
-      if (this.debug) {console.log(`[STM32 Parser] Using tool: ${full}`);}
+      if (this.debug) {console.log(`[Parser] Using tool: ${full}`);}
       return full;
     }
 
-    if (this.debug) {console.warn(`[STM32 Parser] Falling back to ${exe} from PATH`);}
+    if (this.debug) {console.warn(`[Parser] Falling back to ${exe} from PATH`);}
     return exe;
   }
 }

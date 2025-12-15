@@ -1,10 +1,24 @@
 # Changelog
 
+## [1.1.3] – 2025‑12‑15
+
+### Added
+- Add sorting by name, address, and size (ascending/descending).
+- Add search functionality for symbols (case-sensitive, whole word, regex options).
+
+### Changed
+- Improve webview UI layout and styling.
+
+### Fixed
+- Improve build artifact discovery and selection logic.
+- Fixed tree expandability state setting.
+- Remove duplicates path on Windows and macOS.
+
 ## [1.1.2] – 2025‑06‑20
 
 ### Added
 - New `toolchainPath` configuration option allowing users to specify a custom path to the ARM GCC toolchain (e.g., when not available in the system `$PATH`).
-- Added `debug` logging option (`stm32BuildAnalyzerEnhanced.debug`) for easier extension troubleshooting.
+- Added `debug` logging option (`EmbeddedBuildAnalyzer.debug`) for easier extension troubleshooting.
 - Console logs now available via `console.log()` in `Extension Host` output.
 - Added log messages to key services (`BuildFolderResolver`, `MapElfParser`, `BuildAnalyzerProvider`) to aid in debugging and development.
 - Webview now shows current selected build folder.

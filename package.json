@@ -1,11 +1,11 @@
 {
-  "name": "stm32-build-analyzer-enhanced",
-  "displayName": "STM32 Build Analyzer (Enhanced)",
-  "description": "STM32 Build Analyzer for VSCode - Fork of ATwice291/stm32-build-analyzer with additional features...",
-  "version": "1.1.2",
-  "publisher": "niwciu",
+  "name": "embedded-build-analyzer",
+  "displayName": "Embedded Build Analyzer",
+  "description": "Embedded Build Analyzer for VSCode - Fork of niwciu/stm32-build-analyzer with additional features...",
+  "version": "1.1.3",
+  "publisher": "embeddteam",
   "license": "MIT",
-  "icon": "images/icon2.png",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -14,44 +14,44 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/niwciu/stm32-build-analyzer.git"
+    "url": "https://github.com/avlaak/embedded-build-analyzer.git"
   },
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
     "icon": {
-      "light": "images/icon2.png",
-      "dark": "images/icon2.png"
+      "light": "images/icon.png",
+      "dark": "images/icon.png"
     },
     "commands": [
       {
-        "command": "stm32BuildAnalyzerEnhanced.openTab",
-        "title": "STM32 Build Analyzer"
+        "command": "EmbeddedBuildAnalyzer.openTab",
+        "title": "Embedded Build Analyzer"
       },
       {
-        "command": "stm32BuildAnalyzerEnhanced.refresh",
-        "title": "STM32 Build Analyzer Refresh Paths"
+        "command": "EmbeddedBuildAnalyzer.refresh",
+        "title": "Embedded Build Analyzer Refresh Paths"
       }
     ],
     "configuration": {
-      "title": "STM32 Build Analyzer (Enhanced)",
+      "title": "Embedded Build Analyzer",
       "properties": {
-        "stm32BuildAnalyzerEnhanced.mapFilePath": {
+        "EmbeddedBuildAnalyzer.mapFilePath": {
           "type": "string",
           "default": "",
           "description": "Absolute path to the .map file (overrides automatic search)"
         },
-        "stm32BuildAnalyzerEnhanced.elfFilePath": {
+        "EmbeddedBuildAnalyzer.elfFilePath": {
           "type": "string",
           "default": "",
           "description": "Absolute path to the .elf file (overrides automatic search)"
         },
-        "stm32BuildAnalyzerEnhanced.toolchainPath": {
+        "EmbeddedBuildAnalyzer.toolchainPath": {
           "type": "string",
           "default": "",
           "description": "Absolute path to the ARM GNU Embedded toolchain binaries (directory containing arm-none-eabi-objdump, arm-none-eabi-nm, etc.). If set, the extension will use these tools instead of relying solely on PATH."
         },
-        "stm32BuildAnalyzerEnhanced.debug": {
+        "EmbeddedBuildAnalyzer.debug": {
           "type": "boolean",
           "default": false,
           "description": "Enable verbose logging for debugging purposes."
@@ -61,18 +61,19 @@
     "viewsContainers": {
       "panel": [
         {
-          "id": "buildAnalyzerEnhancedPanel",
-          "title": "STM32 Build Analyzer",
-          "icon": "images/icon.png"
+          "id": "embeddedBuildAnalyzerPanel",
+          "title": "Embedded Build Analyzer",
+          "icon": "$(output)"
         }
       ]
     },
     "views": {
-      "buildAnalyzerEnhancedPanel": [
+      "embeddedBuildAnalyzerPanel": [
         {
-          "id": "buildAnalyzerEnhanced",
-          "name": "STM32 Build Analyzer",
-          "type": "webview"
+          "id": "embeddedBuildAnalyzer",
+          "name": "Embedded Build Analyzer",
+          "type": "webview",
+          "icon": "$(output)"
         }
       ]
     }
