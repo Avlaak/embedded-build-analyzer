@@ -8,19 +8,19 @@ export function activate(context: vscode.ExtensionContext) {
   const debug = cfg.get<boolean>('debug') ?? false;
 
   if (debug) {
-    console.log('[Extension] Activating extension...');
+    console.log('[Embedd Build Analyzer] Activating extension...');
   }
 
   provider = new BuildAnalyzerProvider(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand('EmbeddBuildAnalyzer.refresh', () => {
-      if (debug) {console.log('[Extension] Command: refresh');}
+      if (debug) {console.log('[Embedd Build Analyzer] Command: refresh');}
       return provider.refresh();
     }),
 
     vscode.commands.registerCommand('EmbeddBuildAnalyzer.refreshPaths', () => {
-      if (debug) {console.log('[Extension] Command: refreshPaths');}
+      if (debug) {console.log('[Embedd Build Analyzer] Command: refreshPaths');}
       return provider.fullRefresh();
     }),
 
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   if (debug) {
-    console.log('[Extension] Commands and WebviewViewProvider registered.');
+    console.log('[Embedd Build Analyzer] Commands and WebviewViewProvider registered.');
   }
 }
 

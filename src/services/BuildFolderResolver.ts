@@ -23,13 +23,13 @@ export class BuildFolderResolver {
     const customElf = cfg.get<string>('elfFilePath');
 
     if (this.debug) {
-      console.log('[Extension] Resolving build paths...');
-      console.log(`[Extension] Custom map: ${customMap}`);
-      console.log(`[Extension] Custom elf: ${customElf}`);
+      console.log('[Embedd Build Analyzer] Resolving build paths...');
+      console.log(`[Embedd Build Analyzer] Custom map: ${customMap}`);
+      console.log(`[Embedd Build Analyzer] Custom elf: ${customElf}`);
     }
 
     if (customMap && customElf && await this.exists(customMap) && await this.exists(customElf)) {
-      if (this.debug) {console.log('[Extension] Using custom paths from settings.');}
+      if (this.debug) {console.log('[Embedd Build Analyzer] Using custom paths from settings.');}
       return {
         map: customMap,
         elf: customElf,
@@ -44,7 +44,7 @@ export class BuildFolderResolver {
 
     const root = workspaceFolders[0].uri.fsPath;
 
-    if (this.debug) {console.log(`[Extension] Scanning workspace folder: ${root}`);}
+    if (this.debug) {console.log(`[Embedd Build Analyzer] Scanning workspace folder: ${root}`);}
 
     const folders = await this.findBuildFolders(root);
     if (folders.length === 0) {
@@ -92,8 +92,8 @@ export class BuildFolderResolver {
     }
 
     if (this.debug) {
-        console.log(`[Extension] Selected ELF: ${selectedItem.elf}`);
-        console.log(`[Extension] Selected MAP: ${selectedItem.map}`);
+        console.log(`[Embedd Build Analyzer] Selected ELF: ${selectedItem.elf}`);
+        console.log(`[Embedd Build Analyzer] Selected MAP: ${selectedItem.map}`);
     }
 
     return {
@@ -110,7 +110,7 @@ export class BuildFolderResolver {
     if (!toolchain) {return undefined;}
 
     if (await this.exists(toolchain)) {
-      if (this.debug) {console.log(`[Extension] Using toolchain: ${toolchain}`);}
+      if (this.debug) {console.log(`[Embedd Build Analyzer] Using toolchain: ${toolchain}`);}
       vscode.window.showInformationMessage(
         `Embedd Build Analyzer: Using toolchain from ${toolchain}`
       );
@@ -119,7 +119,7 @@ export class BuildFolderResolver {
       vscode.window.showWarningMessage(
         `Embedd Build Analyzer: toolchainPath not found: ${toolchain}`
       );
-      if (this.debug) {console.warn(`[Extension] Toolchain path not found: ${toolchain}`);}
+      if (this.debug) {console.warn(`[Embedd Build Analyzer] Toolchain path not found: ${toolchain}`);}
     }
 
     return undefined;
@@ -130,7 +130,7 @@ export class BuildFolderResolver {
       await fs.promises.access(filePath, fs.constants.R_OK);
       return true;
     } catch {
-      if (this.debug) {console.warn(`[Extension] File not accessible: ${filePath}`);}
+      if (this.debug) {console.warn(`[Embedd Build Analyzer] File not accessible: ${filePath}`);}
       return false;
     }
   }
@@ -162,11 +162,11 @@ export class BuildFolderResolver {
           }
         }
         if (hasMap && hasElf) {
-          if (this.debug) {console.log(`[Extension] Found build folder: ${dir}`);}
+          if (this.debug) {console.log(`[Embedd Build Analyzer] Found build folder: ${dir}`);}
           found.add(dir);
         }
       } catch (err) {
-        if (this.debug) {console.warn(`[Extension] Failed to access folder: ${dir}`);}
+        if (this.debug) {console.warn(`[Embedd Build Analyzer] Failed to access folder: ${dir}`);}
       }
     };
 
@@ -185,7 +185,7 @@ export class BuildFolderResolver {
   private async findFile(folder: string, ext: string): Promise<string | undefined> {
     const files = fs.readdirSync(folder).filter(f => f.endsWith(ext));
     if (files.length === 0) {
-      if (this.debug) {console.warn(`[Extension] No ${ext} files in ${folder}`);}
+      if (this.debug) {console.warn(`[Embedd Build Analyzer] No ${ext} files in ${folder}`);}
       return undefined;
     }
 
@@ -206,10 +206,10 @@ export class BuildFolderResolver {
         throw new Error('Map file is empty');
       }
 
-      if (this.debug) {console.log(`[Extension] Selected ${ext} file: ${p}`);}
+      if (this.debug) {console.log(`[Embedd Build Analyzer] Selected ${ext} file: ${p}`);}
       return p;
     } catch (err) {
-      if (this.debug) {console.warn(`[Extension] Could not use file: ${p}`);}
+      if (this.debug) {console.warn(`[Embedd Build Analyzer] Could not use file: ${p}`);}
       return undefined;
     }
   }

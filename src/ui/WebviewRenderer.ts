@@ -33,12 +33,12 @@ export class WebviewRenderer {
     this.view.webview.html = this.getHtml();
 
     if (this.debug) {
-      console.log('[Webview] Initialized webview with HTML and options.');
+      console.log('[Embedd Build Analyzer] Initialized webview with HTML and options.');
     }
 
     this.view.webview.onDidReceiveMessage(msg => {
       if (this.debug) {
-        console.log(`[Webview] Received message:`, msg);
+        console.log(`[Embedd Build Analyzer] Received message:`, msg);
       }
 
       switch (msg.command) {
@@ -57,7 +57,7 @@ export class WebviewRenderer {
 
   public showData(regions: Region[], buildFolder: string) {
     if (this.debug) {
-      console.log(`[Webview] Sending ${regions.length} region(s) to webview.`);
+      console.log(`[Embedd Build Analyzer] Sending ${regions.length} region(s) to webview.`);
     }
 
     this.view.webview.postMessage({
@@ -70,7 +70,7 @@ export class WebviewRenderer {
   private async openFile(file: string, line: number) {
     try {
       if (this.debug) {
-        console.log(`[Webview] Attempting to open file: ${file} @ ${line}`);
+        console.log(`[Embedd Build Analyzer] Attempting to open file: ${file} @ ${line}`);
       }
 
       const uri = vscode.Uri.file(file);
@@ -82,7 +82,7 @@ export class WebviewRenderer {
     } catch (err) {
       vscode.window.showErrorMessage(`Cannot open ${file}`);
       if (this.debug) {
-        console.error(`[Webview] Failed to open file: ${file}`, err);
+        console.error(`[Embedd Build Analyzer] Failed to open file: ${file}`, err);
       }
     }
   }

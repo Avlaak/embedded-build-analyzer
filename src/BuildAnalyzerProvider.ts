@@ -25,7 +25,7 @@ export class BuildAnalyzerProvider implements vscode.WebviewViewProvider {
     this.watcher.start();
 
     if (this.debug) {
-      console.log('[Provider] Initialized with toolchain path:', toolPath);
+      console.log('[Embedd Build Analyzer] Initialized with toolchain path:', toolPath);
     }
   }
 
@@ -34,12 +34,12 @@ export class BuildAnalyzerProvider implements vscode.WebviewViewProvider {
     this.renderer.init();
 
     if (this.debug) {
-      console.log('[Provider] Webview resolved.');
+      console.log('[Embedd Build Analyzer] Webview resolved.');
     }
 
     view.onDidChangeVisibility(() => {
       if (view.visible) {
-        if (this.debug) {console.log('[Provider] View visible, triggering refresh...');}
+        if (this.debug) {console.log('[Embedd Build Analyzer] View visible, triggering refresh...');}
         this.refresh();
       }
     });
@@ -48,7 +48,7 @@ export class BuildAnalyzerProvider implements vscode.WebviewViewProvider {
   /** Fast refresh – parses using cached paths */
   public async refresh() {
     try {
-      if (this.debug) {console.log('[Provider] Refresh triggered');}
+      if (this.debug) {console.log('[Embedd Build Analyzer] Refresh triggered');}
 
       this.paths = this.paths ?? await this.resolver.resolve();
 
@@ -68,26 +68,26 @@ export class BuildAnalyzerProvider implements vscode.WebviewViewProvider {
       this.renderer?.showData(regions, path.dirname(rel));
 
       if (this.debug) {
-        console.log(`[Provider] Parsed ${regions.length} region(s)`);
+        console.log(`[Embedd Build Analyzer] Parsed ${regions.length} region(s)`);
       }
 
     } catch (e: any) {
       vscode.window.showErrorMessage(e.message || String(e));
       if (this.debug) {
-        console.error('[Provider] Error during refresh:', e);
+        console.error('[Embedd Build Analyzer] Error during refresh:', e);
       }
     }
   }
 
   /** Full refresh – clears cache and forces reselection of build folder */
   public async fullRefresh() {
-    if (this.debug) {console.log('[Provider] Full refresh requested.');}
+    if (this.debug) {console.log('[Embedd Build Analyzer] Full refresh requested.');}
     this.paths = undefined;
     await this.refresh();
   }
 
   dispose(): void {
     this.watcher.dispose();
-    if (this.debug) {console.log('[Provider] Disposed.');}
+    if (this.debug) {console.log('[Embedd Build Analyzer] Disposed.');}
   }
 }
