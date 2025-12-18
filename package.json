@@ -14,7 +14,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/avlaak/embedd-build-analyzer.git"
+    "url": "https://github.com/Avlaak/embedd-build-analyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Avlaak/embedd-build-analyzer/issues"
   },
   "activationEvents": [],
   "main": "./dist/extension.js",
