@@ -1,6 +1,8 @@
 # Embedd Build Analyzer 🚀  
+[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/embedd-team.embedd-build-analyzer.svg)](https://marketplace.visualstudio.com/items?itemName=embedd-team.embedd-build-analyzer)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blue?logo=visualstudiocode)](#)
+[![Open VSX](https://img.shields.io/badge/Open%20VSX-Published-green)](https://open-vsx.org/extension/embedd-team/embedd-build-analyzer)
+[![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blue?logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=embedd-team.embedd-build-analyzer)
 
 ![Main UI View](images/1.png)
 
